@@ -3,6 +3,8 @@ from tester import Tester
 from dataset import Dataset
 import argparse
 import time
+
+
 def get_parameter():
     parser = argparse.ArgumentParser()
     parser.add_argument('-ne', default=1000, type=int, help="number of epochs")
@@ -16,6 +18,7 @@ def get_parameter():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = get_parameter()
     dataset = Dataset(args.dataset)
@@ -27,7 +30,7 @@ if __name__ == '__main__':
     print("~~~~ Select best epoch on validation set ~~~~")
     epochs2test = [str(int(args.save_each * (i + 1))) for i in range(args.ne // args.save_each)]
     dataset = Dataset(args.dataset)
-    
+
     best_mrr = -1.0
     best_epoch = "0"
     for epoch in epochs2test:

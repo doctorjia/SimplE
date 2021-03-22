@@ -1,5 +1,6 @@
 from dataset import Dataset
 from SimplE import SimplE
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -41,6 +42,8 @@ class Trainer:
             if epoch % self.args.save_each == 0:
                 self.save_model(epoch)
 
+        self.output_params()
+
     def save_model(self, chkpnt):
         print("Saving the model")
         directory = "models/" + self.dataset.name + "/"
@@ -48,3 +51,14 @@ class Trainer:
             os.makedirs(directory)
         torch.save(self.model, directory + str(chkpnt) + ".chkpnt")
 
+    def output_params(self):
+        print("Output Parameters...")
+        directory = "output/" + self.dataset.name + "/"
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        ent_h_embs = np.array(self.model.ent_h_embs)
+        np.savetxt(directory+"ent_h_embs.txt", ent_h_embs)
+        ent_t_embs = np.array(self.model.ent_t_embs)
+        np.savetxt(directory + "ent_t_embs.txt", ent_t_embs)
+        rel_embs = np.array(self.model.rel_embs)
+        np.savetxt(directory + "rel_embs.txt", rel_embs)
