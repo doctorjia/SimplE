@@ -58,7 +58,7 @@ while i < 5:
     a = [260881, 260622, 1332730]
     for b in a:
         relation_temp = list(relation_dict.keys())[random.randint(0, 17):]
-        output_file.write(str(generate_entity) + "\t" + str("%08d" % b) + "\t" + relation_temp[0] + "\n")
-        training_df.append([generate_entity, b, relation_temp[0]])
+        output_file.write(str(generate_entity) + "\t" + relation_temp[0] + "\t" + str("%08d" % b) + "\n")
+        training_df.append([generate_entity, relation_temp[0], b])
 
 output_file.close()
