@@ -9,7 +9,10 @@ import os
 class Trainer:
     def __init__(self, dataset, args):
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-        self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
+        if not args.cont:
+            self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
+        else:
+            self.model = torch.load("models/" + self.dataset.name + "/1000.chkpnt")
         self.dataset = dataset
         self.args = args
         
@@ -56,9 +59,9 @@ class Trainer:
         directory = "output/" + self.dataset.name + "/"
         if not os.path.exists(directory):
             os.makedirs(directory)
-        ent_h_embs = np.array(self.model.ent_h_embs)
+        ent_h_embs = np.atleast_1d(self.model.ent_h_embs)
         np.savetxt(directory+"ent_h_embs.txt", ent_h_embs)
-        ent_t_embs = np.array(self.model.ent_t_embs)
+        ent_t_embs = np.atleast_1d(self.model.ent_t_embs)
         np.savetxt(directory + "ent_t_embs.txt", ent_t_embs)
-        rel_embs = np.array(self.model.rel_embs)
+        rel_embs = np.atleast_1d(self.model.rel_embs)
         np.savetxt(directory + "rel_embs.txt", rel_embs)

@@ -15,6 +15,7 @@ def get_parameter():
     parser.add_argument('-neg_ratio', default=1, type=int, help="number of negative examples per positive example")
     parser.add_argument('-batch_size', default=1415, type=int, help="batch size")
     parser.add_argument('-save_each', default=50, type=int, help="validate every k epochs")
+    parser.add_argument('-cont', default=False, type=bool, help="continue training based on last model")
     args = parser.parse_args()
     return args
 
