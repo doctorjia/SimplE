@@ -40,7 +40,10 @@ class Trainer:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
                                                      device=self.device)
                 if self.args.ud_range == 0:
-                    continue
+                    h.requires_grad = False
+                    r.requires_grad = False
+                    t.requires_grad = False
+                    l.requires_grad = False
                 elif self.args.ud_range == 1:
                     for iterat in range(len(h)):
                         if h[iterat] and t[iterat] not in key_ent:
