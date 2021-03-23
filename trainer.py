@@ -4,7 +4,8 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import os 
+import os
+
 
 class Trainer:
     def __init__(self, dataset, args):
@@ -18,41 +19,46 @@ class Trainer:
             self.model.extend(temp)
         self.dataset = dataset
         self.args = args
-        
+
     def train(self):
         self.model.train()
 
         optimizer = torch.optim.Adagrad(
             self.model.parameters(),
             lr=self.args.lr,
-            weight_decay= 0,
-            initial_accumulator_value= 0.1 #this is added because of the consistency to the original tensorflow code
+            weight_decay=0,
+            initial_accumulator_value=0.1  # this is added because of the consistency to the original tensorflow code
         )
+
+        key_ent = [40943, 40944, 40945, 40946, 40947]
 
         for epoch in range(1, self.args.ne + 1):
             last_batch = False
             total_loss = 0.0
 
             while not last_batch:
-                h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio, device = self.device)
-                print('h\n')
-                print(h, len(h))
-                print('r\n')
-                print(r, len(r))
-                print('t\n')
-                print(t, len(t))
-                print('l\n')
-                print(l, len(l))
+                h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
+                                                     device=self.device)
+                if self.args.ud_range == 0:
+                    continue
+                elif self.args.ud_range == 1:
+                    for iterat in range(len(h)):
+                        if h[iterat] and t[iterat] not in key_ent:
+                            h[iterat].requires_grad = False
+                            r[iterat].requires_grad = False
+                            t[iterat].requires_grad = False
+                            l[iterat].requires_grad = False
                 last_batch = self.dataset.was_last_batch()
                 optimizer.zero_grad()
                 scores = self.model(h, r, t)
-                loss = torch.sum(F.softplus(-l * scores))+ (self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(self.args.batch_size))
+                loss = torch.sum(F.softplus(-l * scores)) + (
+                            self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(self.args.batch_size))
                 loss.backward()
                 optimizer.step()
                 total_loss += loss.cpu().item()
 
             print("Loss in iteration " + str(epoch) + ": " + str(total_loss) + "(" + self.dataset.name + ")")
-        
+
             if epoch % self.args.save_each == 0:
                 self.save_model(epoch)
 
@@ -71,7 +77,7 @@ class Trainer:
         if not os.path.exists(directory):
             os.makedirs(directory)
         ent_h_embs = np.array(self.model.ent_h_embs.weight.data.cpu())
-        np.savetxt(directory+"ent_h_embs.txt", ent_h_embs)
+        np.savetxt(directory + "ent_h_embs.txt", ent_h_embs)
         ent_t_embs = np.atleast_1d(self.model.ent_t_embs.weight.data.cpu())
         np.savetxt(directory + "ent_t_embs.txt", ent_t_embs)
         rel_embs = np.atleast_1d(self.model.rel_embs.weight.data.cpu())
