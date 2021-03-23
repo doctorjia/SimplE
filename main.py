@@ -16,6 +16,7 @@ def get_parameter():
     parser.add_argument('-batch_size', default=1415, type=int, help="batch size")
     parser.add_argument('-save_each', default=50, type=int, help="validate every k epochs")
     parser.add_argument('-cont', default=False, type=bool, help="continue training based on last model")
+    parser.add_argument('-ud_range', default=2, type=int, help="0:not update,1:update neighbor,2:update all")
     args = parser.parse_args()
     return args
 

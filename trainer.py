@@ -35,6 +35,14 @@ class Trainer:
 
             while not last_batch:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio, device = self.device)
+                print('h\n')
+                print(h)
+                print('r\n')
+                print(r)
+                print('t\n')
+                print(t)
+                print('l\n')
+                print(l)
                 last_batch = self.dataset.was_last_batch()
                 optimizer.zero_grad()
                 scores = self.model(h, r, t)
