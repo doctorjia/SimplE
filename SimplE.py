@@ -38,8 +38,8 @@ class SimplE(nn.Module):
         return torch.clamp((scores1 + scores2) / 2, -20, 20)
 
     def extend(self, num_ent, num_rel):
-        self.ent_h_embs.weight.data.expand(num_ent, -1)
+        self.ent_h_embs.weight.data.expand(num_ent, self.emb_dim)
         print(num_ent, np.array(self.ent_h_embs.weight.data.cpu()).shape)
-        self.ent_t_embs.weight.data.expand(num_ent, -1)
-        self.rel_embs.weight.data.expand(num_rel, -1)
-        self.rel_inv_embs.weight.data.expand(num_rel, -1)
+        self.ent_t_embs.weight.data.expand(num_ent, self.emb_dim)
+        self.rel_embs.weight.data.expand(num_rel, self.emb_dim)
+        self.rel_inv_embs.weight.data.expand(num_rel, self.emb_dim)
