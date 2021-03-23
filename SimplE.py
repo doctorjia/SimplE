@@ -39,6 +39,7 @@ class SimplE(nn.Module):
 
     def extend(self):
         self.ent_h_embs.weight.data.expand(self.num_ent, -1)
+        print(np.array(self.model.ent_h_embs.weight.data.cpu()).shape)
         self.ent_t_embs.weight.data.expand(self.num_ent, -1)
         self.rel_embs.weight.data.expand(self.num_rel, -1)
         self.rel_inv_embs.weight.data.expand(self.num_rel, -1)
