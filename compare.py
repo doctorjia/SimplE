@@ -1,10 +1,12 @@
 import os
 import pandas as pd
 import numpy as np
+np.set_printoptions(suppress=True)
 import random
 
-catalog3 = "out_test3.txt"
-catalog4 = "out_test4.txt"
+catalog3 = "../ent_h_embs.txt"
+catalog4 = "../ent_h_embs_2.txt"
+
 
 def bit_product_sum(x, y):
     return sum([item[0] * item[1] for item in zip(x, y)])
@@ -43,14 +45,14 @@ def read_catalog(catalog):
     for index, line in enumerate(open(catalog, 'r')):
         count += 1
         if "#entity" in line:
-            entity_info = int(line[line.find(':')+2:-1])
+            entity_info = int(line[line.find(':') + 2:-1])
         if "#relation" in line:
-            relation_info = int(line[line.find(':')+2:-1])
+            relation_info = int(line[line.find(':') + 2:-1])
 
     cat3_matrix = np.zeros((entity_info, 50))
     cat3_relmat = np.zeros((relation_info, 50))
 
-    #print(entity_info,relation_info)
+    # print(entity_info,relation_info)
 
     iter_id = 0
     ent_id = 0
@@ -61,8 +63,8 @@ def read_catalog(catalog):
             break
         else:
             iter_id += 1
-    #print(iter_id)
-    
+    # print(iter_id)
+
     flag = False
 
     while iter_id < count and flag == False and ent_id < entity_info:
@@ -96,7 +98,7 @@ def read_catalog(catalog):
             cat3_matrix[ent_id][it] = float(list_cat3[it])
         ent_id += 1
         iter_id += cnt_tmp
-        #print(list_cat3)
+        # print(list_cat3)
     while iter_id < count and rel_id < relation_info:
         list_cat3 = []
         temp = "&"
@@ -110,7 +112,7 @@ def read_catalog(catalog):
                 temp = temp + cur_line[:-2]
         temp = temp[1:]
         if "[" in temp:
-            temp = temp[temp.rfind("[")+1:]
+            temp = temp[temp.rfind("[") + 1:]
         else:
             temp = temp[1:]
         if "]" in temp:
@@ -118,18 +120,48 @@ def read_catalog(catalog):
         else:
             temp = temp[:-1]
         list_cat3 = temp.split()
-        #print(temp)
+        # print(temp)
 
         for it in range(len(list_cat3)):
             cat3_relmat[rel_id][it] = list_cat3[it]
 
         iter_id += cnt_tmp
-        #print(cat3_relmat[rel_id])
+        # print(cat3_relmat[rel_id])
         rel_id += 1
 
     return cat3_matrix, cat3_relmat
 
+original_ent = []
+new_ent = []
 
+with open(catalog3, 'r') as f1:
+    read_file = f1.readlines()
+    for each_line in read_file:
+        original_ent.append(list(map(float, each_line.split())))
+    print(original_ent[0])
+
+with open(catalog4, 'r') as f2:
+    read_file = f2.readlines()
+    for each_line in read_file:
+        new_ent.append(list(map(float, each_line.split())))
+    print(new_ent[0])
+
+original_ent = np.array(original_ent)
+new_ent = np.array(new_ent)
+
+new_ent_t = new_ent[:len(original_ent)]
+new_top3 = new_ent[:3]
+original_top3 = original_ent[:3]
+
+difference = np.sum(np.abs(np.square(new_ent_t-original_ent)/(len(original_ent)*len(original_ent[0]))))
+difference2 = np.sum(np.abs(np.square(new_top3-original_top3)/(len(original_ent)*len(original_ent[0]))))
+print(difference, difference2)
+
+
+
+
+
+"""
 catalog3_ent, catalog3_rel = read_catalog(catalog3)
 catalog4_ent, catalog4_rel = read_catalog(catalog4)
 
@@ -167,3 +199,5 @@ print(difference2)
 #print(difference3)
 print(np.max(difference3), np.min(difference3), np.average(difference3))
 #print(np.max(difference4), np.min(difference4), np.average(difference4))
+
+"""
