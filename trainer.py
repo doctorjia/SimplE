@@ -13,7 +13,7 @@ class Trainer:
             self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
         else:
             self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
-            self.model = torch.load("models/" + self.dataset.name + "/1000.chkpnt")
+            self.model = torch.load("models/" + self.dataset.name + "/100.chkpnt")
         self.dataset = dataset
         self.args = args
         
