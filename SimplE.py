@@ -37,9 +37,9 @@ class SimplE(nn.Module):
         scores2 = torch.sum(ht_embs * r_inv_embs * th_embs, dim=1)
         return torch.clamp((scores1 + scores2) / 2, -20, 20)
 
-    def extend(self):
-        self.ent_h_embs.weight.data.expand(self.num_ent, -1)
-        print(self.num_ent, np.array(self.ent_h_embs.weight.data.cpu()).shape)
-        self.ent_t_embs.weight.data.expand(self.num_ent, -1)
-        self.rel_embs.weight.data.expand(self.num_rel, -1)
-        self.rel_inv_embs.weight.data.expand(self.num_rel, -1)
+    def extend(self, num_ent, num_rel):
+        self.ent_h_embs.weight.data.expand(num_ent, -1)
+        print(num_ent, np.array(self.ent_h_embs.weight.data.cpu()).shape)
+        self.ent_t_embs.weight.data.expand(num_ent, -1)
+        self.rel_embs.weight.data.expand(num_rel, -1)
+        self.rel_inv_embs.weight.data.expand(num_rel, -1)

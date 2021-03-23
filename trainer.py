@@ -14,7 +14,7 @@ class Trainer:
         else:
             self.model = torch.load("models/WN18/100.chkpnt")
             #temp = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
-            self.model.extend()
+            self.model.extend(dataset.num_ent(), dataset.num_rel())
         self.dataset = dataset
         self.args = args
         
