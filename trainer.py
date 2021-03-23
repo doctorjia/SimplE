@@ -59,9 +59,9 @@ class Trainer:
         directory = "output/" + self.dataset.name + "/"
         if not os.path.exists(directory):
             os.makedirs(directory)
-        ent_h_embs = np.array(self.model.ent_h_embs.weight.data)
+        ent_h_embs = np.array(self.model.ent_h_embs.weight.data.cpu())
         np.savetxt(directory+"ent_h_embs.txt", ent_h_embs)
-        ent_t_embs = np.atleast_1d(self.model.ent_t_embs.weight.data)
+        ent_t_embs = np.atleast_1d(self.model.ent_t_embs.weight.data.cpu())
         np.savetxt(directory + "ent_t_embs.txt", ent_t_embs)
-        rel_embs = np.atleast_1d(self.model.rel_embs.weight.data)
+        rel_embs = np.atleast_1d(self.model.rel_embs.weight.data.cpu())
         np.savetxt(directory + "rel_embs.txt", rel_embs)
