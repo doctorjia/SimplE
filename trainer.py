@@ -12,9 +12,10 @@ class Trainer:
         if not args.cont:
             self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
         else:
-            self.model = torch.load("models/WN18/100.chkpnt")
-            #temp = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
-            self.model.extend(dataset.num_ent(), dataset.num_rel())
+            self.model = SimplE(dataset.num_ent(), dataset.num_rel(), args.emb_dim, self.device)
+            temp = torch.load("models/WN18/100.chkpnt")
+            # self.model.extend(dataset.num_ent(), dataset.num_rel())
+            self.model.extend(temp)
         self.dataset = dataset
         self.args = args
         

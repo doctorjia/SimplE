@@ -37,20 +37,12 @@ class SimplE(nn.Module):
         scores2 = torch.sum(ht_embs * r_inv_embs * th_embs, dim=1)
         return torch.clamp((scores1 + scores2) / 2, -20, 20)
 
-    def extend(self, num_ent, num_rel):
-        temp = self.ent_h_embs.weight.data
-        temp.expand(num_ent, self.emb_dim)
-        embs = nn.Embedding(num_ent, self.emb_dim).to(self.device)
-        temp.copy_(embs)
-        #self.ent_h_embs = self.copy_data(self.ent_h_embs, num_ent)
-        #self.ent_t_embs = self.copy_data(self.ent_t_embs, num_ent)
-        #self.rel_embs = self.copy_data(self.rel_embs, num_rel)
-        #self.rel_inv_embs = self.copy_data(self.rel_inv_embs, num_rel)
+    def extend(self, model):
+        for i in range(model.num_ent):
+            self.ent_h_embs.weight.data[i] = model.ent_h_embs.weight.data[i]
+            self.ent_h_embs.weight.data[i] = model.ent_h_embs.weight.data[i]
+        for i in range(model.num_rel):
+            self.rel_embs.weight.data[i] = model.rel_embs.weight.data[i]
+            self.rel_inv_embs.weight.data[i] = model.rel_inv_embs.weight.data[i]
 
-    def copy_data(self, embs, num):
-        temp = embs.weight.data
-        temp.expand(num, self.emb_dim)
-        embs = nn.Embedding(num, self.emb_dim).to(self.device)
-        temp.copy_(embs)
 
-        return embs
