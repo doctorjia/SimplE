@@ -25,7 +25,7 @@ class Trainer:
 
         key_ent = [40943, 40944, 40945, 40946, 40947, 25546, 10838, 4207]
 
-        neighbor_ent = [25546, 10838, 4207]
+        neighbor_ent = [40943, 40944, 40945, 40946, 40947, 25546, 10838, 4207, 25546, 10838, 4207, 1270784, 1338113, 1269379, 4151940, 1337224, 1283208, 1362568, 1365131, 260622, 1207951, 1268112, 260881, 248977, 1603732, 1271189, 1363482, 1264283, 1335588, 1338663, 265386, 2840619, 1580467, 1337653, 1124794, 1336635, 3122748, 1599805, 1363648, 1233993, 265673, 1208400, 1336159, 1268457, 1233387, 1517175, 1358328, 1335804]
 
         optimizer = torch.optim.Adagrad(
             self.model.parameters(),
@@ -53,6 +53,32 @@ class Trainer:
                         l_1 = []
                         for iterat in range(len(h)):
                             if h[iterat] or t[iterat] in key_ent:
+                                flag = True
+                                h_1.append(h[iterat])
+                                r_1.append(r[iterat])
+                                t_1.append(t[iterat])
+                                l_1.append(l[iterat])
+                        h_1 = torch.FloatTensor(h_1).to(self.device).long()
+                        r_1 = torch.FloatTensor(r_1).to(self.device).long()
+                        t_1 = torch.FloatTensor(t_1).to(self.device).long()
+                        l_1 = torch.FloatTensor(l_1).to(self.device)
+                        last_batch = self.dataset.was_last_batch()
+                        optimizer.zero_grad()
+                        scores = self.model(h_1, r_1, t_1)
+                        loss = torch.sum(F.softplus(-l_1 * scores)) + (
+                                self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(
+                            self.args.batch_size))
+                        loss.backward()
+                        optimizer.step()
+                        total_loss += loss.cpu().item()
+                    elif self.args.ud_range == 3:
+                        flag = False
+                        h_1 = []
+                        r_1 = []
+                        t_1 = []
+                        l_1 = []
+                        for iterat in range(len(h)):
+                            if h[iterat] or t[iterat] in neighbor_ent:
                                 flag = True
                                 h_1.append(h[iterat])
                                 r_1.append(r[iterat])
