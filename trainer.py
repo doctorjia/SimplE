@@ -23,14 +23,16 @@ class Trainer:
     def train(self):
         self.model.train()
 
+        key_ent = [40943, 40944, 40945, 40946, 40947, 25546, 10838, 4207]
+
+        neighbor_ent = [25546, 10838, 4207]
+
         optimizer = torch.optim.Adagrad(
             self.model.parameters(),
             lr=self.args.lr,
             weight_decay=0,
             initial_accumulator_value=0.1  # this is added because of the consistency to the original tensorflow code
         )
-
-        key_ent = [40943, 40944, 40945, 40946, 40947]
 
         for epoch in range(1, self.args.ne + 1):
             last_batch = False
@@ -40,22 +42,44 @@ class Trainer:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
                                                      device=self.device)
                 if self.args.ud_range == 0:
+                    print("Finish iteration " + str(epoch) + "(" + self.dataset.name + ")")
                     continue
-                elif self.args.ud_range == 1:
-                    for iterat in range(len(h)):
-                        if h[iterat] and t[iterat] not in key_ent:
-                            h[iterat].requires_grad = False
-                            r[iterat].requires_grad = False
-                            t[iterat].requires_grad = False
-                            l[iterat].requires_grad = False
-                last_batch = self.dataset.was_last_batch()
-                optimizer.zero_grad()
-                scores = self.model(h, r, t)
-                loss = torch.sum(F.softplus(-l * scores)) + (
-                            self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(self.args.batch_size))
-                loss.backward()
-                optimizer.step()
-                total_loss += loss.cpu().item()
+                else:
+                    if self.args.ud_range == 1:
+                        flag = False
+                        h_1 = []
+                        r_1 = []
+                        t_1 = []
+                        l_1 = []
+                        for iterat in range(len(h)):
+                            if h[iterat] or t[iterat] in key_ent:
+                                flag = True
+                                h_1.append(h[iterat])
+                                r_1.append(r[iterat])
+                                t_1.append(t[iterat])
+                                l_1.append(l[iterat])
+                        h_1 = torch.LongTensor(h_1)
+                        r_1 = torch.LongTensor(r_1)
+                        t_1 = torch.LongTensor(t_1)
+                        l_1 = torch.LongTensor(l_1)
+                        last_batch = self.dataset.was_last_batch()
+                        optimizer.zero_grad()
+                        scores = self.model(h_1, r_1, t_1)
+                        loss = torch.sum(F.softplus(-l_1 * scores)) + (
+                                self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(
+                            self.args.batch_size))
+                        loss.backward()
+                        optimizer.step()
+                        total_loss += loss.cpu().item()
+                    else:
+                        last_batch = self.dataset.was_last_batch()
+                        optimizer.zero_grad()
+                        scores = self.model(h, r, t)
+                        loss = torch.sum(F.softplus(-l * scores)) + (
+                                    self.args.reg_lambda * self.model.l2_loss() / self.dataset.num_batch(self.args.batch_size))
+                        loss.backward()
+                        optimizer.step()
+                        total_loss += loss.cpu().item()
 
             print("Loss in iteration " + str(epoch) + ": " + str(total_loss) + "(" + self.dataset.name + ")")
 
