@@ -60,7 +60,7 @@ class Trainer:
                         h_1 = torch.FloatTensor(h_1).to(self.device).long()
                         r_1 = torch.FloatTensor(r_1).to(self.device).long()
                         t_1 = torch.FloatTensor(t_1).to(self.device).long()
-                        l_1 = torch.FloatTensor(l_1).to(self.device).long()
+                        l_1 = torch.FloatTensor(l_1).to(self.device)
                         last_batch = self.dataset.was_last_batch()
                         optimizer.zero_grad()
                         scores = self.model(h_1, r_1, t_1)
