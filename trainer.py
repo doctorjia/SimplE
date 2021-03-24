@@ -42,7 +42,6 @@ class Trainer:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
                                                      device=self.device)
                 if self.args.ud_range == 0:
-                    print("Finish iteration " + str(epoch) + "(" + self.dataset.name + ")")
                     continue
                 else:
                     if self.args.ud_range == 1:
@@ -58,10 +57,10 @@ class Trainer:
                                 r_1.append(r[iterat])
                                 t_1.append(t[iterat])
                                 l_1.append(l[iterat])
-                        h_1 = torch.LongTensor(h_1)
-                        r_1 = torch.LongTensor(r_1)
-                        t_1 = torch.LongTensor(t_1)
-                        l_1 = torch.LongTensor(l_1)
+                        h_1 = torch.LongTensor(h_1, device=self.device)
+                        r_1 = torch.LongTensor(r_1, device=self.device)
+                        t_1 = torch.LongTensor(t_1, device=self.device)
+                        l_1 = torch.LongTensor(l_1, device=self.device)
                         last_batch = self.dataset.was_last_batch()
                         optimizer.zero_grad()
                         scores = self.model(h_1, r_1, t_1)
@@ -85,6 +84,8 @@ class Trainer:
 
             if epoch % self.args.save_each == 0:
                 self.save_model(epoch)
+            if self.args.ud_range == 0:
+                print("Finish iteration " + str(epoch) + "(" + self.dataset.name + ")")
 
         self.output_params()
 
