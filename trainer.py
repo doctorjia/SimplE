@@ -42,6 +42,7 @@ class Trainer:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
                                                      device=self.device)
                 if self.args.ud_range == 0:
+                    last_batch = self.dataset.was_last_batch()
                     continue
                 else:
                     if self.args.ud_range == 1:
