@@ -40,6 +40,7 @@ class Trainer:
                 h, r, t, l = self.dataset.next_batch(self.args.batch_size, neg_ratio=self.args.neg_ratio,
                                                      device=self.device)
                 if self.args.ud_range == 0:
+                    print("ok")
                     h.requires_grad = False
                     r.requires_grad = False
                     t.requires_grad = False
